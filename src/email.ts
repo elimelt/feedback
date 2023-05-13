@@ -10,7 +10,7 @@ export async function forward(name: string, email: string, feedback: string) {
         from: config.MY_SENDER,
         subject: `feedback from ${name}  |  ${email}`,
         text: feedback,
-        html: `<strong>${feedback}</strong>`
+        html: '<strong>' + feedback + '</strong>'
     }
 
     try {
