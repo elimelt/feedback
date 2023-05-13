@@ -1,8 +1,8 @@
 import sgMail from '@sendgrid/mail'
 import config from './config'
 
-export async function forward(name: string, email: string, feedback: string) {
-    
+export async function forward(name: string, email: string, feedback: string, secret: string) {
+    if (config.SECRET !== secret) return;
 
     sgMail.setApiKey(config.SENDGRID_API_KEY)
     const msg = {
