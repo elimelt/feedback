@@ -15,7 +15,7 @@ export async function forward(name: string, email: string, feedback: string, sec
 
     try {
         const result = await sgMail.send(msg)
-        console.log(result)
+        console.log("sendGrid result: ", result)
     } catch (error) {
         console.error(error)
     }
