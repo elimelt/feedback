@@ -5,7 +5,7 @@ export async function forward(name: string, email: string, feedback: string, sec
     console.log("secrets: ", config.SECRET, secret);
     console.log("bool: config.SECRET !== secret", config.SECRET !== secret)
 
-    if (config.SECRET !== secret) return;
+    if (""+config.SECRET !== ""+secret) return { success: false };
 
     sgMail.setApiKey(config.SENDGRID_API_KEY)
     const msg = {
@@ -19,8 +19,10 @@ export async function forward(name: string, email: string, feedback: string, sec
     try {
         const result = await sgMail.send(msg)
         console.log("sendGrid result: ", result)
+        return { success: ("" + result[0].statusCode === "" + 202) }
     } catch (error) {
         console.error(error)
+        return { success: false }
     }
 }
 
