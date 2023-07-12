@@ -4,7 +4,7 @@ import * as path from 'path';
 // append log data to the daily log file or create a new file if it doesn't exist
 export function logData(name: string, log: string) {
   const date = new Date();
-  const logFileName = `logs/${name}_${date.toISOString().slice(0, 10)}.txt`;
+  const logFileName = `../logs/${name}_${date.toISOString().slice(0, 10)}.txt`;
   const logFilePath = path.join(__dirname, logFileName);
 
   // currently getting error rror creating log file: 
