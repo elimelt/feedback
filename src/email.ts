@@ -2,8 +2,6 @@ import sgMail from '@sendgrid/mail'
 import config from './config'
 
 export async function forward(name: string, email: string, feedback: string, secret: string) {
-    console.log("secrets: ", config.SECRET, secret);
-    console.log("bool: config.SECRET !== secret", config.SECRET !== secret)
 
     if (""+config.SECRET !== ""+secret) return { success: false };
 
