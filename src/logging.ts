@@ -29,12 +29,12 @@ export function logData(name: string, log: string) {
   }
 }
 
-export function saveData(prev: Log, name: string, log: string): Log {
+export function saveData(prev: Log, log: string): Log {
     const date = new Date();
     
     let updatedLog = { ...prev }
 
-    updatedLog.name = prev.name + date.getUTCDate() + log + '\n';
+    updatedLog.log = prev.log + date.getUTCDate() + log + '\n';
 
     return updatedLog    
 }
