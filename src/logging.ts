@@ -7,6 +7,9 @@ export function logData(name: string, log: string) {
   const logFileName = `logs/${name}_${date.toISOString().slice(0, 10)}.txt`;
   const logFilePath = path.join(__dirname, logFileName);
 
+  // currently getting error rror creating log file: 
+  // [Error: ENOENT: no such file or directory, open '/app/dist/logs/web_2023-07-12.txt']
+
   // if the log file already exists
   if (fs.existsSync(logFilePath)) {
     fs.appendFile(logFilePath, log + '\n', (err) => {
@@ -14,7 +17,7 @@ export function logData(name: string, log: string) {
         console.error('Error writing to log file:', err);
       }
     });
-  } else {
+  } else { 
     // new log file and append the log data
     fs.writeFile(logFilePath, log + '\n', (err) => {
       if (err) {
