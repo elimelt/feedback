@@ -34,34 +34,24 @@ export function saveData(prev: Log, log: string): Log {
     
     let updatedLog = { ...prev }
 
-    updatedLog.log = prev.log + date.toDateString() + " " + log + '\n';
+    updatedLog.log = prev.log + date.toDateString() + " " + date.toTimeString() + " " + log + '\n';
 
     return updatedLog    
 }
 
-export function generateLogsReport(logsDirectory: string): string {
-    const logsReport: string[] = [];
-  
-    // Read the directory contents
-    const files = fs.readdirSync(logsDirectory);
-  
-    // Iterate through each file in the directory
-    files.forEach((file) => {
-      const filePath = path.join(logsDirectory, file);
-  
-      // Check if the file is a regular file
-      if (fs.statSync(filePath).isFile()) {
-        const logContent = fs.readFileSync(filePath, 'utf8');
-        const logName = path.basename(file, path.extname(file));
-  
-        // Add the log name and content to the logs report
-        logsReport.push(`Log Name: ${logName}`);
-        logsReport.push('=============================================');
-        logsReport.push(logContent);
-        logsReport.push('=============================================');
-      }
-    });
-  
-    // Join the logs report array into a single string
-    return logsReport.join('\n');
-  }
+export function generateLogReport(log: Log): string {
+    return log.name + '\n' +
+        log.log
+}
+
+export function generateLogsReport(logs: Log[]): string {
+    let result: string = "";
+
+    logs.forEach(log => {
+        result += '===========================================\n'
+        result += generateLogReport(log)
+        result += '===========================================\n'
+    })
+
+    return result;
+}
