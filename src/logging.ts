@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Log } from './types';
+
 
 // append log data to the daily log file or create a new file if it doesn't exist
 export function logData(name: string, log: string) {
@@ -25,6 +27,16 @@ export function logData(name: string, log: string) {
       }
     });
   }
+}
+
+export function saveData(prev: Log, name: string, log: string): Log {
+    const date = new Date();
+    
+    let updatedLog = { ...prev }
+
+    updatedLog.name = prev.name + date.getUTCDate() + log + '\n';
+
+    return updatedLog    
 }
 
 export function generateLogsReport(logsDirectory: string): string {
