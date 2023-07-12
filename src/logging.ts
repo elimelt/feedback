@@ -48,9 +48,9 @@ export function generateLogsReport(logs: Log[]): string {
     let result: string = "";
 
     logs.forEach(log => {
-        result += '===========================================\n'
+        result += '===========================================\n' 
         result += generateLogReport(log)
-        result += '===========================================\n'
+        result += '\n===========================================\n'
     })
 
     return result;
