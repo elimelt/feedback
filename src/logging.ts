@@ -34,7 +34,7 @@ export function saveData(prev: Log, log: string): Log {
     
     let updatedLog = { ...prev }
 
-    updatedLog.log = prev.log + date.getUTCDate() + log + '\n';
+    updatedLog.log = prev.log + date.toDateString() + " " + log + '\n';
 
     return updatedLog    
 }
