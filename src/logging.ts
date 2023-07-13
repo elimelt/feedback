@@ -29,7 +29,7 @@ export function logData(name: string, log: string) {
   }
 }
 
-export function saveData(prev: Log, log: any): Log {
+export function saveData(prev: Log, log: any[]): Log {
     const date = new Date();
     const datestring = date.toDateString() + " " + date.toTimeString()
     let updatedLog = { ...prev }
