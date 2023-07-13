@@ -41,7 +41,7 @@ export function saveData(prev: Log, log: any): Log {
 
 export function generateLogReport(log: Log): string {
     let res = log.name 
-    Object.entries(log.log).map(([k, v]) => `${k}: ${v}`).forEach(e => res += '\n' + e)
+    res += JSON.stringify(log.log)
 
     return res
 }
