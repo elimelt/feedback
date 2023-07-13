@@ -5,5 +5,5 @@ export interface QueueItem {
   
 export interface Log {
     name: string,
-    log: string
+    log: any
 }

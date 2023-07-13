@@ -29,7 +29,7 @@ export function logData(name: string, log: string) {
   }
 }
 
-export function saveData(prev: Log, log: string): Log {
+export function saveData(prev: Log, log: any): Log {
     const date = new Date();
     
     let updatedLog = { ...prev }
@@ -40,8 +40,7 @@ export function saveData(prev: Log, log: string): Log {
 }
 
 export function generateLogReport(log: Log): string {
-    return log.name + '\n' +
-        log.log
+    return log.name + log.log
 }
 
 export function generateLogsReport(logs: Log[]): string {
