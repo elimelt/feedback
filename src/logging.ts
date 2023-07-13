@@ -44,7 +44,7 @@ export function generateLogReport(log: Log): any {
 }
 
 export function generateLogsReport(logs: Log[]): any {
-    let result: any = logs
+    let result: any = JSON.parse(JSON.stringify(logs))
 
     return result;
 }
