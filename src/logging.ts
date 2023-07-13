@@ -40,16 +40,20 @@ export function saveData(prev: Log, log: any): Log {
 }
 
 export function generateLogReport(log: Log): string {
-    return log.name + log.log
+    let res = log.name 
+    Object.entries(log.log).map(([k, v]) => `${k}: ${v}`).forEach(e => res += '\n' + e)
+
+    return res
 }
 
 export function generateLogsReport(logs: Log[]): string {
     let result: string = "";
 
     logs.forEach(log => {
-        result += '===========================================\n' 
-        result += generateLogReport(log)
-        result += '\n===========================================\n'
+        result += 
+        `===========================================
+         ${generateLogReport(log)}
+         ===========================================`
     })
 
     return result;
