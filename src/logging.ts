@@ -39,22 +39,12 @@ export function saveData(prev: Log, log: any): Log {
     return updatedLog    
 }
 
-export function generateLogReport(log: Log): string {
-    let res = log.name 
-    res += JSON.stringify(log.log)
-
-    return res
+export function generateLogReport(log: Log): any {
+    return {name: log.name, content: log.log}
 }
 
-export function generateLogsReport(logs: Log[]): string {
-    let result: string = "";
-
-    logs.forEach(log => {
-        result += 
-        `===========================================
-         ${generateLogReport(log)}
-         ===========================================`
-    })
+export function generateLogsReport(logs: Log[]): any {
+    let result: any = logs
 
     return result;
 }
