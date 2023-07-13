@@ -31,10 +31,10 @@ export function logData(name: string, log: string) {
 
 export function saveData(prev: Log, log: any): Log {
     const date = new Date();
-    
+    const datestring = date.toDateString() + " " + date.toTimeString()
     let updatedLog = { ...prev }
 
-    updatedLog.log = [...prev.log,  date.toDateString() + " " + date.toTimeString() + " " + log + '\n'];
+    updatedLog.log.push({datestring: log});
 
     return updatedLog    
 }
