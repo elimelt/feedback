@@ -3,7 +3,12 @@ export interface QueueItem {
     timestamp: number;
   }
   
+export interface LogEntry {
+  timestamp: string
+  entry: any
+}
+
 export interface Log {
-    name: string,
-    log: any
+  name: string
+  log: LogEntry[]
 }

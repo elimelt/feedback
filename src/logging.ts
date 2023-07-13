@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Log } from './types';
+import { Log, LogEntry } from './types';
 
 
 // append log data to the daily log file or create a new file if it doesn't exist
@@ -29,12 +29,13 @@ export function logData(name: string, log: string) {
   }
 }
 
-export function saveData(prev: Log, log: any[]): Log {
+export function saveData(prev: Log, entryData: any): Log {
     const date = new Date();
     const datestring = date.toDateString() + " " + date.toTimeString()
+    const newEntry: LogEntry = { timestamp: datestring, entry: entryData }
+    
     let updatedLog = { ...prev }
-
-    updatedLog.log.push({datestring: log});
+    updatedLog.log = [...updatedLog.log, newEntry]
 
     return updatedLog    
 }
