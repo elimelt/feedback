@@ -24,6 +24,31 @@ export async function forward(name: string, email: string, feedback: string, sec
     }
 }
 
+export async function sendEmail(to: string, subject: string, content: string, secret: string) {
+
+    console.log("sendEmail: ", to, "subject: ", subject, "content: ", content)
+
+    if (""+config.SECRET !== ""+secret) return { success: false };
+
+    sgMail.setApiKey(config.SENDGRID_API_KEY)
+    const msg = {
+        to: to,
+        from: config.MY_SENDER,
+        subject: subject,
+        text: content,
+        html: '<div>' + content + '</div>'
+    }
+
+    try {
+        const result = await sgMail.send(msg)
+        console.log("sendGrid result: ", result)
+        return { success: ("" + result[0].statusCode === "" + 202) }
+    } catch (error) {
+        console.error(error)
+        return { success: false }
+    }
+}
+
 
 
 
