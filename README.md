@@ -1,2 +1,2 @@
 # feedback
-A microservice for users feedback submissions
+A service for users feedback submissions
