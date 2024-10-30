@@ -8,6 +8,15 @@ export function validateEmail(email: string): void {
 }
 
 export function validateSecret(secret: string, expectedSecret: string): void {
+    if (typeof secret !== 'string') {
+        try {
+            secret = JSON.stringify(secret);
+        }
+        catch (error) {
+            throw new ValidationError('Invalid secret');
+        }
+    }
+
     if (secret !== expectedSecret) {
         throw new ValidationError('Invalid secret');
     }
