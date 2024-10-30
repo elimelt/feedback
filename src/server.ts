@@ -38,7 +38,8 @@ class Server {
         const limiter = rateLimit({
             windowMs: 60 * 60 * 1000,
             max: 100,
-            message: 'Too many requests from this IP, please try again in an hour'
+            message: 'Too many requests from this IP, please try again in an hour',
+            validate: {trustProxy: false}
         });
         this.app.use(limiter);
 

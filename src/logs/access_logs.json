@@ -1,0 +1,58 @@
+[
+  {
+    "ip": "::1",
+    "timestamp": "2024-10-30T06:51:30.986Z",
+    "endpoint": "/reports/access/html",
+    "method": "GET",
+    "statusCode": 200,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+  },
+  {
+    "ip": "::1",
+    "timestamp": "2024-10-30T06:51:36.976Z",
+    "endpoint": "/reports/log/html",
+    "method": "GET",
+    "statusCode": 404,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+  },
+  {
+    "ip": "::1",
+    "timestamp": "2024-10-30T06:51:42.517Z",
+    "endpoint": "/reports/logs/html",
+    "method": "GET",
+    "statusCode": 200,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+  },
+  {
+    "ip": "::1",
+    "timestamp": "2024-10-30T06:53:17.732Z",
+    "endpoint": "/reports/logs/html",
+    "method": "GET",
+    "statusCode": 200,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+  },
+  {
+    "ip": "::1",
+    "timestamp": "2024-10-30T06:53:18.713Z",
+    "endpoint": "/reports/logs/html",
+    "method": "GET",
+    "statusCode": 200,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+  },
+  {
+    "ip": "::1",
+    "timestamp": "2024-10-30T06:53:20.050Z",
+    "endpoint": "/reports/logs/html",
+    "method": "GET",
+    "statusCode": 200,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+  },
+  {
+    "ip": "::1",
+    "timestamp": "2024-10-30T06:53:20.172Z",
+    "endpoint": "/reports/logs/html",
+    "method": "GET",
+    "statusCode": 200,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+  }
+]

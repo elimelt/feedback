@@ -126,8 +126,6 @@ export class EmailService {
             </tr>
         `).join('');
 
-        const rawReport = JSON.stringify(report, null, 2);
-
         const stats = `
             <h2>Stats</h2>
             <p>Total logs: ${report.length}</p>
@@ -148,7 +146,6 @@ export class EmailService {
                         </tr>
                         ${tableRows}
                     </table>
-                    <pre>${rawReport}</pre>
                 </body>
             </html>
         `;
