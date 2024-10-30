@@ -1,7 +1,7 @@
 import sgMail from '@sendgrid/mail';
 import { Config } from './config';
 import { ValidationError } from './errors';
-import { AccessReport } from './types';
+import { AccessReport, Log } from './types';
 
 export class EmailService {
     private config: Config;
@@ -43,12 +43,13 @@ export class EmailService {
     }
 
     public async sendLogReport(report: any): Promise<boolean> {
+        const htmlReport = this.formatLogReportHtml(report);
         return this.sendMailWrapper({
             to: this.config.LOGGER_EMAIL,
             from: this.config.SENDER_EMAIL,
             subject: 'Daily Logs Report',
             text: JSON.stringify(report, null, 2),
-            html: `<pre>${JSON.stringify(report, null, 2)}</pre>`
+            html: htmlReport
         });
     }
 
@@ -64,7 +65,7 @@ export class EmailService {
         });
     }
 
-    private formatAccessReportHtml(report: AccessReport): string {
+    public formatAccessReportHtml(report: AccessReport): string {
         const tableRows = Object.entries(report.accessesByIP)
             .map(([ip, data]) => `
                 <tr>
@@ -92,4 +93,66 @@ export class EmailService {
             </table>
         `;
     }
+
+    public formatLogReportHtml(report: Log[]): string {
+        const style = `
+            <style>
+                pre {
+                    white-space: pre-wrap;
+                    word-wrap: break-word;
+                }
+
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+
+                th, td {
+                    border: 1px solid black;
+                    padding: 8px;
+                    text-align: left;
+                }
+
+                th {
+                    background-color: #f2f2f2;
+                }
+            </style>
+        `;
+
+        const tableRows = report.map(log => `
+            <tr>
+                <td>${log.name}</td>
+                <td><pre>${JSON.stringify(log.log, null, 2)}</pre></td>
+            </tr>
+        `).join('');
+
+        const rawReport = JSON.stringify(report, null, 2);
+
+        const stats = `
+            <h2>Stats</h2>
+            <p>Total logs: ${report.length}</p>
+        `;
+
+        return `
+            <html>
+                <head>
+                    ${style}
+                </head>
+                <body>
+                    <h1>Log Report</h1>
+                    ${stats}
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th>Log</th>
+                        </tr>
+                        ${tableRows}
+                    </table>
+                    <pre>${rawReport}</pre>
+                </body>
+            </html>
+        `;
+
+    }
+
 }

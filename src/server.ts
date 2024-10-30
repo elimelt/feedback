@@ -172,6 +172,28 @@ class Server {
             }
         });
 
+        // html report pages
+        this.app.get('/reports/logs/html', async (req, res, next) => {
+            try {
+                const report = await this.logManager.generateReport();
+                const htmlReport = this.emailService.formatLogReportHtml(report);
+                res.send(htmlReport);
+            } catch (error) {
+                next(error);
+            }
+        });
+
+        // html access report
+        this.app.get('/reports/access/html', async (req, res, next) => {
+            try {
+                const report = await this.logManager.generateAccessReport();
+                const htmlReport = this.emailService.formatAccessReportHtml(report);
+                res.send(htmlReport);
+            } catch (error) {
+                next(error);
+            }
+        });
+
         // 404 handler
         this.app.use((req, res) => {
             res.status(404).json({ error: 'Endpoint not found' });

@@ -27,6 +27,10 @@
     {
       "name": "logs",
       "description": "System logging operations"
+    },
+    {
+      "name": "reports",
+      "description": "Report generation operations"
     }
   ],
   "components": {
@@ -106,6 +110,17 @@
           }
         }
       },
+      "TriggerReportRequest": {
+        "type": "object",
+        "required": ["secret"],
+        "properties": {
+          "secret": {
+            "type": "string",
+            "description": "Authentication secret",
+            "example": "your-secret-here"
+          }
+        }
+      },
       "LogEntry": {
         "type": "object",
         "properties": {
@@ -135,6 +150,55 @@
             "items": {
               "$ref": "#/components/schemas/LogEntry"
             }
+          }
+        }
+      },
+      "AccessEntry": {
+        "type": "object",
+        "properties": {
+          "lastAccess": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last access timestamp",
+            "example": "2024-10-29T12:00:00Z"
+          },
+          "totalAccesses": {
+            "type": "integer",
+            "description": "Total number of accesses",
+            "example": 42
+          },
+          "endpoints": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Count of accesses per endpoint",
+            "example": {
+              "/api/endpoint1": 20,
+              "/api/endpoint2": 22
+            }
+          }
+        }
+      },
+      "AccessReport": {
+        "type": "object",
+        "properties": {
+          "totalAccesses": {
+            "type": "integer",
+            "description": "Total number of API accesses",
+            "example": 150
+          },
+          "uniqueIPs": {
+            "type": "integer",
+            "description": "Number of unique IP addresses",
+            "example": 25
+          },
+          "accessesByIP": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AccessEntry"
+            },
+            "description": "Access details grouped by IP address"
           }
         }
       },
@@ -365,6 +429,144 @@
                   "items": {
                     "$ref": "#/components/schemas/Log"
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports/logs": {
+      "post": {
+        "tags": ["reports"],
+        "summary": "Trigger log report",
+        "description": "Triggers the generation and sending of a log report",
+        "operationId": "triggerLogReport",
+        "security": [
+          {
+            "SecretAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerReportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Report triggered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports/access": {
+      "get": {
+        "tags": ["reports"],
+        "summary": "Get access report",
+        "description": "Retrieves the current access report",
+        "operationId": "getAccessReport",
+        "responses": {
+          "200": {
+            "description": "Access report retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessReport"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["reports"],
+        "summary": "Trigger access report",
+        "description": "Triggers the generation and sending of an access report",
+        "operationId": "triggerAccessReport",
+        "security": [
+          {
+            "SecretAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerReportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Report triggered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
