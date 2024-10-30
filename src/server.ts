@@ -32,6 +32,7 @@ class Server {
         this.app.use(helmet());
         this.app.use(cors());
         this.app.use(express.json({ limit: '10kb' }));
+        this.app.enable('trust proxy');
         
         // rate limiting - 100 requests per hour per IP
         const limiter = rateLimit({
