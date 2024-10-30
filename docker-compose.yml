@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: email-api
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/log"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    ports:
+      - "8080:8080"
+    environment:
+      - URL=openapi.json
+      # Configure Swagger UI
+      - SWAGGER_JSON=/swagger/openapi.json
+      # Disable schema validation for development
+      - VALIDATOR_URL=none
+      # Set the server URL to match your API
+      - API_URL=http://localhost:3001
+    volumes:
+      - ./api-docs:/swagger
+    networks:
+      - app-network
+    depends_on:
+      - api
+
+networks:
+  app-network:
+    driver: bridge

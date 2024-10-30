@@ -1,0 +1,386 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Email and Logging API",
+    "description": "API for handling email communications and system logging",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "email": "support@yourdomain.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "feedback",
+      "description": "Feedback submission operations"
+    },
+    {
+      "name": "email",
+      "description": "Direct email operations"
+    },
+    {
+      "name": "logs",
+      "description": "System logging operations"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "FeedbackRequest": {
+        "type": "object",
+        "required": ["name", "email", "feedback", "secret"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the person providing feedback",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the feedback provider",
+            "example": "john.doe@example.com"
+          },
+          "feedback": {
+            "type": "string",
+            "description": "The feedback content",
+            "example": "This is my feedback about the service."
+          },
+          "secret": {
+            "type": "string",
+            "description": "Authentication secret",
+            "example": "your-secret-here"
+          }
+        }
+      },
+      "EmailRequest": {
+        "type": "object",
+        "required": ["to", "subject", "content", "secret"],
+        "properties": {
+          "to": {
+            "type": "string",
+            "format": "email",
+            "description": "Recipient email address",
+            "example": "recipient@example.com"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Email subject",
+            "example": "Important Update"
+          },
+          "content": {
+            "type": "string",
+            "description": "Email content (supports HTML)",
+            "example": "<p>Hello, this is the email content.</p>"
+          },
+          "secret": {
+            "type": "string",
+            "description": "Authentication secret",
+            "example": "your-secret-here"
+          }
+        }
+      },
+      "LogWriteRequest": {
+        "type": "object",
+        "required": ["logName", "content", "secret"],
+        "properties": {
+          "logName": {
+            "type": "string",
+            "description": "Name of the log category",
+            "example": "web"
+          },
+          "content": {
+            "type": "string",
+            "description": "Log entry content",
+            "example": "User login successful"
+          },
+          "secret": {
+            "type": "string",
+            "description": "Authentication secret",
+            "example": "your-secret-here"
+          }
+        }
+      },
+      "LogEntry": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the log entry",
+            "example": "2024-10-29T12:00:00Z"
+          },
+          "entry": {
+            "type": "string",
+            "description": "Content of the log entry",
+            "example": "User login successful"
+          }
+        }
+      },
+      "Log": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the log category",
+            "example": "web"
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogEntry"
+            }
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if the operation was successful",
+            "example": true
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates operation failure",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Invalid email format"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "SecretAuth": {
+        "type": "apiKey",
+        "in": "body",
+        "name": "secret",
+        "description": "Authentication secret passed in request body"
+      }
+    }
+  },
+  "paths": {
+    "/feedback/send": {
+      "post": {
+        "tags": ["feedback"],
+        "summary": "Submit feedback",
+        "description": "Submits feedback and forwards it via email",
+        "operationId": "sendFeedback",
+        "security": [
+          {
+            "SecretAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Feedback sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/email": {
+      "post": {
+        "tags": ["email"],
+        "summary": "Send email",
+        "description": "Sends an email to specified recipient",
+        "operationId": "sendEmail",
+        "security": [
+          {
+            "SecretAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/log/write": {
+      "post": {
+        "tags": ["logs"],
+        "summary": "Write log entry",
+        "description": "Writes a new log entry to specified log category",
+        "operationId": "writeLog",
+        "security": [
+          {
+            "SecretAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogWriteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Log entry written successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/log": {
+      "get": {
+        "tags": ["logs"],
+        "summary": "Get logs",
+        "description": "Retrieves all logs",
+        "operationId": "getLogs",
+        "responses": {
+          "200": {
+            "description": "Logs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Log"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

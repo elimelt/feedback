@@ -1,9 +1,0 @@
-POST https://feedback-server.herokuapp.com/feedback/send HTTP/1.1 
-content-type: application/json
-
-{
-"name": "elijah", 
-"email": "emm122333@gmail.com", 
-"feedback": "this is a test",
-"secret": "69"
-}

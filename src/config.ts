@@ -1,13 +1,41 @@
-require('dotenv').config();
+import * as dotenv from 'dotenv';
 
+dotenv.config({ path: '.env' });
 
-const MY_EMAIL = process.env.MY_EMAIL as string;
-const MY_SENDER = process.env.MY_SENDER as string;
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY as string;
-const SERVER_URL = process.env.SERVER_URL as string;
-const SECRET = process.env.SECRET as string;
+export class Config {
+    public readonly SECRET: string;
+    public readonly SENDGRID_API_KEY: string;
+    public readonly SENDER_EMAIL: string;
+    public readonly FEEDBACK_EMAIL: string;
+    public readonly LOGGER_EMAIL: string;
 
-const config = { MY_EMAIL, MY_SENDER, SENDGRID_API_KEY, SERVER_URL, SECRET }
+    constructor() {
+        this.SECRET = process.env.SECRET || '';
+        this.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
+        this.SENDER_EMAIL = process.env.SENDER_EMAIL || '';
+        this.FEEDBACK_EMAIL = process.env.FEEDBACK_EMAIL || '';
+        this.LOGGER_EMAIL = process.env.LOGGER_EMAIL || '';
 
+        this.validateConfig();
+    }
 
-export default config;
+    private validateConfig(): void {
+        const requiredEnvVars = [
+            'SECRET',
+            'SENDGRID_API_KEY',
+            'SENDER_EMAIL',
+            'FEEDBACK_EMAIL',
+            'LOGGER_EMAIL'
+        ];
+
+        const missingVars = requiredEnvVars.filter(
+            varName => !process.env[varName]
+        );
+
+        if (missingVars.length > 0) {
+            throw new Error(
+                `Missing required environment variables: ${missingVars.join(', ')}`
+            );
+        }
+    }
+}

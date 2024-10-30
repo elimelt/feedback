@@ -1,9 +1,0 @@
-POST http://localhost:3001/email HTTP/1.1
-Content-Type: application/json
-
-{
-  "to": "olson.haley.15@gmail.com",
-  "subject": "Hello",
-  "content": "I love you",
-  "secret": 69
-}
