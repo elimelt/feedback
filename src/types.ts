@@ -8,8 +8,25 @@ export interface Log {
     log: LogEntry[];
 }
 
-export interface QueueItem {
+export interface AccessLog {
     ip: string;
-    timestamp: number;
+    timestamp: string;
+    endpoint: string;
+    method: string;
+    statusCode: number;
+    userAgent?: string;
 }
 
+export interface AccessReport {
+    totalAccesses: number;
+    uniqueIPs: number;
+    accessesByIP: {
+        [ip: string]: {
+            lastAccess: string;
+            totalAccesses: number;
+            endpoints: {
+                [endpoint: string]: number;
+            };
+        };
+    };
+}

@@ -9,7 +9,7 @@ import { LogManager } from './logManager';
 import { EmailService } from './emailService';
 import { Config } from './config';
 import { errorHandler } from './middleware/errorHandler';
-import { requestLogger } from './middleware/requestLogger';
+import { AccessLog } from './types';
 
 class Server {
     private app: express.Application;
@@ -42,7 +42,29 @@ class Server {
         this.app.use(limiter);
 
         // request logging
-        this.app.use(requestLogger);
+        this.app.use(async (req, res, next) => {
+            const originalSend = res.send;
+            let statusCode = 200;
+
+            res.send = function (body) {
+                statusCode = res.statusCode;
+                return originalSend.call(this, body);
+            };
+
+            res.on('finish', async () => {
+                const accessLog: AccessLog = {
+                    ip: req.ip,
+                    timestamp: new Date().toISOString(),
+                    endpoint: req.path,
+                    method: req.method,
+                    statusCode,
+                    userAgent: req.get('user-agent')
+                };
+                await this.logManager.logAccess(accessLog);
+            });
+
+            next();
+        });
     }
 
     private setupRoutes(): void {
@@ -112,6 +134,43 @@ class Server {
             }
         });
 
+        this.app.post('/reports/logs', async (req, res, next) => {
+            try {
+                const { secret } = req.body;
+                validateSecret(secret, this.config.SECRET);
+
+                const report = await this.logManager.generateReport();
+                await this.emailService.sendLogReport(report);
+                res.json({ success: true });
+            } catch (error) {
+                next(error);
+            }
+        });
+
+        // trigger access report
+        this.app.post('/reports/access', async (req, res, next) => {
+            try {
+                const { secret } = req.body;
+                validateSecret(secret, this.config.SECRET);
+
+                const report = await this.logManager.generateAccessReport();
+                await this.emailService.sendAccessReport(report);
+                res.json({ success: true });
+            } catch (error) {
+                next(error);
+            }
+        });
+
+        // get access report directly
+        this.app.get('/reports/access', async (req, res, next) => {
+            try {
+                const report = await this.logManager.generateAccessReport();
+                res.json(report);
+            } catch (error) {
+                next(error);
+            }
+        });
+
         // 404 handler
         this.app.use((req, res) => {
             res.status(404).json({ error: 'Endpoint not found' });
@@ -129,6 +188,15 @@ class Server {
                 await this.emailService.sendLogReport(report);
             } catch (error) {
                 console.error('Failed to generate and send log report:', error);
+            }
+        });
+
+        cron.schedule('0 1 * * *', async () => {
+            try {
+                const report = await this.logManager.generateAccessReport();
+                await this.emailService.sendAccessReport(report);
+            } catch (error) {
+                console.error('Failed to generate and send access report:', error);
             }
         });
 

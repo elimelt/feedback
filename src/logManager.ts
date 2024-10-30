@@ -1,15 +1,17 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Log, LogEntry } from './types';
+import { Log, LogEntry, AccessLog, AccessReport } from './types';
 
 export class LogManager {
     private logs: Map<string, LogEntry[]>;
-    private readonly maxLogAge: number = 30 * 24 * 60 * 60 * 1000;
-    private readonly maxLogsPerType: number = 1000;
+    private accessLogs: AccessLog[];
     private readonly logsDirectory: string;
+    private readonly maxLogAge: number = 30 * 24 * 60 * 60 * 1000; // 30 days
+    private readonly maxLogsPerType: number = 1000;
 
     constructor(logsDirectory: string = path.join(__dirname, 'logs')) {
         this.logs = new Map();
+        this.accessLogs = [];
         this.logsDirectory = logsDirectory;
         this.initialize();
     }
@@ -18,12 +20,64 @@ export class LogManager {
         try {
             await fs.mkdir(this.logsDirectory, { recursive: true });
             await this.loadLogs();
+            await this.loadAccessLogs();
         } catch (error) {
             console.error('Failed to initialize logs:', error);
             throw new Error('Log initialization failed');
         }
     }
 
+    private async loadAccessLogs(): Promise<void> {
+        try {
+            const filePath = path.join(this.logsDirectory, 'access_logs.json');
+            const exists = await fs.access(filePath).then(() => true).catch(() => false);
+            if (exists) {
+                const content = await fs.readFile(filePath, 'utf-8');
+                this.accessLogs = JSON.parse(content);
+            }
+        } catch (error) {
+            console.error('Failed to load access logs:', error);
+            this.accessLogs = [];
+        }
+    }
+
+    public async logAccess(log: AccessLog): Promise<void> {
+        this.accessLogs.push(log);
+        await this.saveAccessLogs();
+    }
+
+    private async saveAccessLogs(): Promise<void> {
+        const filePath = path.join(this.logsDirectory, 'access_logs.json');
+        await fs.writeFile(filePath, JSON.stringify(this.accessLogs, null, 2));
+    }
+
+    public async generateAccessReport(): Promise<AccessReport> {
+        const report: AccessReport = {
+            totalAccesses: this.accessLogs.length,
+            uniqueIPs: new Set(this.accessLogs.map(log => log.ip)).size,
+            accessesByIP: {}
+        };
+
+        this.accessLogs.forEach(log => {
+            if (!report.accessesByIP[log.ip]) {
+                report.accessesByIP[log.ip] = {
+                    lastAccess: log.timestamp,
+                    totalAccesses: 0,
+                    endpoints: {}
+                };
+            }
+
+            const ipReport = report.accessesByIP[log.ip];
+            ipReport.totalAccesses++;
+            ipReport.endpoints[log.endpoint] = (ipReport.endpoints[log.endpoint] || 0) + 1;
+
+            if (new Date(log.timestamp) > new Date(ipReport.lastAccess)) {
+                ipReport.lastAccess = log.timestamp;
+            }
+        });
+
+        return report;
+    }
     private async loadLogs(): Promise<void> {
         try {
             const files = await fs.readdir(this.logsDirectory);

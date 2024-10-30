@@ -1,6 +1,7 @@
 import sgMail from '@sendgrid/mail';
 import { Config } from './config';
 import { ValidationError } from './errors';
+import { AccessReport } from './types';
 
 export class EmailService {
     private config: Config;
@@ -49,5 +50,46 @@ export class EmailService {
             text: JSON.stringify(report, null, 2),
             html: `<pre>${JSON.stringify(report, null, 2)}</pre>`
         });
+    }
+
+    public async sendAccessReport(report: AccessReport): Promise<boolean> {
+        const htmlReport = this.formatAccessReportHtml(report);
+
+        return this.sendMailWrapper({
+            to: this.config.LOGGER_EMAIL,
+            from: this.config.SENDER_EMAIL,
+            subject: 'Daily Access Report',
+            text: JSON.stringify(report, null, 2),
+            html: htmlReport
+        });
+    }
+
+    private formatAccessReportHtml(report: AccessReport): string {
+        const tableRows = Object.entries(report.accessesByIP)
+            .map(([ip, data]) => `
+                <tr>
+                    <td>${ip}</td>
+                    <td>${data.lastAccess}</td>
+                    <td>${data.totalAccesses}</td>
+                    <td>${Object.entries(data.endpoints)
+                        .map(([endpoint, count]) => `${endpoint}: ${count}`)
+                        .join('<br>')}</td>
+                </tr>
+            `).join('');
+
+        return `
+            <h1>Access Report</h1>
+            <p>Total Accesses: ${report.totalAccesses}</p>
+            <p>Unique IPs: ${report.uniqueIPs}</p>
+            <table border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>IP Address</th>
+                    <th>Last Access</th>
+                    <th>Total Accesses</th>
+                    <th>Endpoints (Count)</th>
+                </tr>
+                ${tableRows}
+            </table>
+        `;
     }
 }
